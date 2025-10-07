@@ -37,43 +37,45 @@ const Modal = ({ isOpen, onClose, children, title, size = 'md' }) => {
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`relative w-full ${sizes[size]} bg-white dark:bg-gray-800 rounded-2xl shadow-2xl my-8`}
-            >
-              {/* Header */}
-              {title && (
-                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {title}
-                  </h2>
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="min-h-screen px-4 text-center flex items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className={`relative w-full ${sizes[size]} bg-white dark:bg-gray-800 rounded-2xl shadow-2xl my-8 text-left overflow-hidden`}
+              >
+                {/* Header */}
+                {title && (
+                  <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {title}
+                    </h2>
+                    <button
+                      onClick={onClose}
+                      className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <IoClose className="w-6 h-6" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Close button without title */}
+                {!title && (
                   <button
                     onClick={onClose}
-                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
                   >
                     <IoClose className="w-6 h-6" />
                   </button>
+                )}
+
+                {/* Content */}
+                <div className="p-6">
+                  {children}
                 </div>
-              )}
-
-              {/* Close button without title */}
-              {!title && (
-                <button
-                  onClick={onClose}
-                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
-                >
-                  <IoClose className="w-6 h-6" />
-                </button>
-              )}
-
-              {/* Content */}
-              <div className="p-6">
-                {children}
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </>
       )}

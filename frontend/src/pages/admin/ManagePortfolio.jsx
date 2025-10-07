@@ -49,14 +49,13 @@ const ManagePortfolio = () => {
       const submitData = {
         ...formData,
         price: parseFloat(formData.price),
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-      };
-
-      if (editingCake) {
-        await portfolioAPI.update(editingCake._id, submitData);
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        images: formData.images.filter(img => img.url.trim() !== '')
+      }; if (editingCake) {
+        await portfolioAPI.update(editingCake._id, formDataToSubmit);
         toast.success('Cake updated successfully');
       } else {
-        await portfolioAPI.create(submitData);
+        await portfolioAPI.create(formDataToSubmit);
         toast.success('Cake created successfully');
       }
       setModalOpen(false);
@@ -105,7 +104,7 @@ const ManagePortfolio = () => {
       preparationTime: '2-3 days',
       tags: '',
       featured: false,
-      images: [{ url: '', alt: '' }]
+      images: [{ alt: '', file: null, preview: null }]
     });
   };
 
@@ -122,9 +121,47 @@ const ManagePortfolio = () => {
     setFormData({ ...formData, images: newImages });
   };
 
+  const handleFileChange = (index, event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPEG, PNG, WebP, or GIF)');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+
+    const newImages = [...formData.images];
+    newImages[index] = {
+      ...newImages[index],
+      file: file,
+      preview: previewUrl,
+      url: '',  // Clear the existing URL if any
+    };
+    setFormData({ ...formData, images: newImages });
+  };
+
   const removeImage = (index) => {
-    const newImages = formData.images.filter((_, i) => i !== index);
-    setFormData({ ...formData, images: newImages.length > 0 ? newImages : [{ url: '', alt: '' }] });
+    const newImages = [...formData.images];
+    if (newImages[index].preview) {
+      URL.revokeObjectURL(newImages[index].preview);
+    }
+    newImages.splice(index, 1);
+    if (newImages.length === 0) {
+      newImages.push({ alt: '', file: null, preview: null });
+    }
+    setFormData({ ...formData, images: newImages });
   };
 
   return (
@@ -241,18 +278,20 @@ const ManagePortfolio = () => {
         title={editingCake ? 'Edit Cake' : 'Add Cake'}
         size="lg"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold mb-2">Title *</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                required
-                className="input"
-                placeholder="Elegant Wedding Cake"
-              />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6 max-h-[calc(100vh-16rem)] overflow-y-auto pr-4 -mr-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2">Title *</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  required
+                  className="input"
+                  placeholder="Elegant Wedding Cake"
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2">Category *</label>
@@ -280,6 +319,50 @@ const ManagePortfolio = () => {
               className="textarea"
               placeholder="Describe the cake..."
             />
+          </div>
+
+          {/* Images Section */}
+          <div>
+            <label className="block text-sm font-semibold mb-2">Images (URLs)</label>
+            {formData.images.map((image, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <div className="flex-1 space-y-2">
+                  <input
+                    type="url"
+                    value={image.url}
+                    onChange={(e) => updateImage(index, 'url', e.target.value)}
+                    className="input w-full"
+                    placeholder="https://example.com/image.jpg"
+                    required={index === 0}
+                  />
+                  <input
+                    type="text"
+                    value={image.alt}
+                    onChange={(e) => updateImage(index, 'alt', e.target.value)}
+                    className="input w-full"
+                    placeholder="Image description"
+                  />
+                </div>
+                {formData.images.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    onClick={() => removeImage(index)}
+                    icon={<IoTrash />}
+                  />
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addImageField}
+              className="mt-2"
+            >
+              + Add Image
+            </Button>
           </div>
 
           <div className="grid md:grid-cols-3 gap-4">
@@ -326,35 +409,6 @@ const ManagePortfolio = () => {
               className="input"
               placeholder="wedding, elegant, floral"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2">Images (URLs)</label>
-            {formData.images.map((image, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <input
-                  type="url"
-                  value={image.url}
-                  onChange={(e) => updateImage(index, 'url', e.target.value)}
-                  className="input flex-1"
-                  placeholder="https://example.com/image.jpg"
-                  required={index === 0}
-                />
-                {formData.images.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="danger"
-                    size="sm"
-                    onClick={() => removeImage(index)}
-                  >
-                    Remove
-                  </Button>
-                )}
-              </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" onClick={addImageField}>
-              + Add Image
-            </Button>
           </div>
 
           <label className="flex items-center gap-2">
