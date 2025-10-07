@@ -11,7 +11,7 @@ const Button = ({
   icon = null,
   ...props
 }) => {
-  const baseClasses = 'font-semibold rounded-full transition-all duration-300 flex items-center justify-center gap-2';
+  const baseClasses = 'font-semibold rounded-full transition-all duration-300 flex items-center justify-center gap-2 mx-auto sm:mx-0';
 
   const variants = {
     primary: 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-lg hover:scale-105 active:scale-95',
@@ -22,9 +22,9 @@ const Button = ({
   };
 
   const sizes = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg',
+    sm: 'px-4 py-2 text-sm min-w-[120px]',
+    md: 'px-6 py-3 text-base min-w-[140px]',
+    lg: 'px-8 py-4 text-lg min-w-[160px]',
   };
 
   const disabledClasses = 'opacity-50 cursor-not-allowed hover:scale-100';

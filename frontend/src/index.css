@@ -6,7 +6,7 @@
   * {
     @apply box-border;
   }
-  
+
   body {
     @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-poppins;
     @apply transition-colors duration-300;
@@ -64,14 +64,55 @@
     @apply input resize-none;
   }
 
-  /* Section padding */
+  /* Section padding - improved responsive design */
   .section-padding {
-    @apply py-16 md:py-24 px-4 md:px-8 lg:px-16;
+    @apply py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 md:px-8 lg:px-16;
   }
 
-  /* Container */
+  /* Container - better responsive max-widths */
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Responsive text sizing */
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl;
+  }
+
+  /* Responsive spacing */
+  .space-responsive {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+
+  /* Better mobile-first button styles */
+  .btn-responsive {
+    @apply px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base;
+  }
+
+  /* Improved grid responsiveness */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8;
+  }
+
+  /* Responsive flex centering */
+  .flex-center-responsive {
+    @apply flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6;
   }
 
   /* Gradient text */
