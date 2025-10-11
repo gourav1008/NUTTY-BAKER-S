@@ -41,13 +41,15 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS configuration
-const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+// CORS configuration - only use in development
+if (process.env.NODE_ENV !== "production") {
+  const corsOptions = {
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    credentials: true,
+    optionsSuccessStatus: 200
+  };
+  app.use(cors(corsOptions));
+}
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
@@ -75,13 +77,24 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    status: 'error',
-    message: 'Route not found' 
+// Serve static files in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
-});
+}
+
+// 404 handler for non-production or API routes
+if (process.env.NODE_ENV !== "production") {
+  app.use((req, res) => {
+    res.status(404).json({ 
+      status: 'error',
+      message: 'Route not found' 
+    });
+  });
+}
 
 // Global error handler
 app.use((err, req, res, next) => {

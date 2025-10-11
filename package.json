@@ -1,0 +1,12 @@
+{
+  "name": "cake-backer-portfolio",
+  "version": "1.0.0",
+  "description": "A modern, full-stack MERN application showcasing a cake baker's portfolio with stunning 3D animations and interactive design.",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
