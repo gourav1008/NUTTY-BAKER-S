@@ -9,7 +9,7 @@ const connectDB = async () => {
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
     console.error(`💡 Make sure MongoDB is running locally or check your MONGODB_URI`);
-    process.exit(1);
+    // Removed process.exit(1) to prevent serverless function crash
   }
 };
 
